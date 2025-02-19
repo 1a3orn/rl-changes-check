@@ -25,7 +25,7 @@ def load_prompts(path):
             #"Afterwards, write the answer and only the answer inside <answer>...</answer> tags."
         )
         full_prompt = f"{question_str} {addition}"
-        converted.append({"prompt": full_prompt, "answer": answer_str})
+        converted.append({"prompt": full_prompt.trim(), "answer": answer_str})
 
     return converted
 
@@ -38,7 +38,7 @@ def main():
     prompt_text = [item["prompt"] for item in prompts][:10]
 
     print("Loading model...")
-    sampling_params = SamplingParams(temperature=0.8, top_p=0.95, max_tokens=3000)
+    sampling_params = SamplingParams(temperature=0.6, top_p=0.95, max_tokens=3000)
     llm = load_llm("./agentica")
 
     CHUNK_SIZE = 2
