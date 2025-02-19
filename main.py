@@ -48,7 +48,7 @@ def get_is_correct(answer, correct_answer):
 
 models = [
     ("agentica", boxed_extractor),
-    #("deepseek", boxed_extractor),
+    ("deepseek", boxed_extractor),
 ]
 
 
@@ -56,12 +56,12 @@ def main():
 
     print("Loading prompts...")
     prompts = load_prompts("./datasets/trash_math_train_questions.json")
-    prompt_text = [item["prompt"] for item in prompts][:25]
+    prompt_text = [item["prompt"] for item in prompts][:30]
 
     for model_path, extractor in models:
 
         print(f"Loading model {model_path}...")
-        sampling_params = SamplingParams(temperature=0.6, top_p=0.95, max_tokens=5000)
+        sampling_params = SamplingParams(temperature=0.6, top_p=0.95, top_k=-1, max_tokens=6000)
         llm = load_llm(model_path)
 
         count_correct = 0
