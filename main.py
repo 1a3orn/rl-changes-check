@@ -77,7 +77,7 @@ def main_dataset(dataset_path):
             prompts = load_prompts(dataset_path, with_boxed_instructions=with_boxed_instructions)
             prompt_text = [item["prompt"] for item in prompts][:200]
 
-            sampling_params = SamplingParams(temperature=temperature, max_tokens=6000)
+            sampling_params = SamplingParams(temperature=temperature, max_tokens=8000)
             
             count_correct = 0
             count_total = 0
