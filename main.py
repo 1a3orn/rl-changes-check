@@ -75,7 +75,12 @@ def main():
                 is_correct = get_is_correct(answer_given, answer_correct)
                 count_correct += int(is_correct)
                 count_total += 1
-                print(f"\n\nPrompt: {prompt!r}\nGenerated text: {generated_text!r}\nAnswer: {answer!r}\nCorrect: {answer_correct!r}\nIs correct: {is_correct}")
+                print("Prompt: ", prompt)
+                print("Generated text: ", generated_text)
+                print("Answer given: ", answer_given)
+                print("Answer correct: ", answer_correct)
+                print("Is correct: ", is_correct)
+                print("")
 
         print(f"Accuracy: {count_correct / count_total}")
 
