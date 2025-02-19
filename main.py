@@ -28,13 +28,15 @@ def load_prompts(path):
 
     return converted
 def main():
+
+
+    print("Loading prompts...")
+    prompts = load_prompts("./data/trash_math_train_questions.json")    prompts = load_prompts("./data/trash_math_train_questions.json")
+    prompt_text = [item["prompt"] for item in prompts]
+
     print("Loading model...")
     sampling_params = SamplingParams(temperature=0.8, top_p=0.95)
     llm = load_llm("./agentica")
-
-
-    prompts = load_prompts("./data/trash_math_train_questions.json")
-    prompt_text = [item["prompt"] for item in prompts]
 
     CHUNK_SIZE = 2
     for i in range(len(prompt_text) // CHUNK_SIZE):
