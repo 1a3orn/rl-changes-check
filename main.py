@@ -7,7 +7,7 @@ def load_llm(model_path):
     llm = LLM(model=model_path, dtype="float16")
     return llm
 
-def load_prompts(path):
+def load_prompts(path, with_boxed_instructions=False):
     with open(path, "r") as f:
         data = json.load(f)
 
@@ -19,7 +19,7 @@ def load_prompts(path):
 
         # Append some instructions about <think> and <answer>
         addition = (
-            "Put the answer in the format of boxed{...} with the answer inside the brackets."
+            "Put the answer in the format of boxed{...} with the answer inside the brackets." if with_boxed_instructions else ""
             #"First, please think step-by-step about how to get the right answer. "
             #"You may use any technique you want to find the answer or check that it is right."
             #"Afterwards, write the answer and only the answer inside <answer>...</answer> tags."
@@ -58,55 +58,70 @@ models = [
 
 
 def main():
-
     print("Loading prompts...")
-    prompts = load_prompts("./datasets/trash_math_train_questions.json")
+    prompts = load_prompts("./datasets/trash_math_train_questions.json", with_boxed_instructions=True)
     prompt_text = [item["prompt"] for item in prompts][:50]
 
-    for model_path, extractor in models:
+    all_results = []  # Store results from all runs
 
-        print(f"Loading model {model_path}...")
-        sampling_params = SamplingParams(temperature=0.6, top_p=0.95, top_k=-1, max_tokens=6000)
-        llm = load_llm(model_path)
+    for with_boxed_instructions in [True, False]:
+        for model_path, extractor in models:
+            print(f"Loading model {model_path}...")
+            sampling_params = SamplingParams(temperature=0.6, top_p=0.95, top_k=-1, max_tokens=6000)
+            llm = load_llm(model_path)
 
-        count_correct = 0
-        count_total = 0
+            count_correct = 0
+            count_total = 0
 
-        outputs = llm.generate(prompt_text, sampling_params)
+            outputs = llm.generate(prompt_text, sampling_params)
 
-        record = []
-        for j, output in enumerate(outputs):
-            prompt = output.prompt
-            generated_text = output.outputs[0].text
-            answer_given = extractor(generated_text)
-            answer_correct = prompts[j]["answer"]
-            is_correct = get_is_correct(answer_given, answer_correct)
-            count_correct += int(is_correct)
-            count_total += 1
-            record.append({
-                "prompt": prompt,
-                "generated_text": generated_text,
-                "answer_given": answer_given,
-                "answer_correct": answer_correct,
-                "is_correct": is_correct
+            record = []
+            for j, output in enumerate(outputs):
+                prompt = output.prompt
+                generated_text = output.outputs[0].text
+                answer_given = extractor(generated_text)
+                answer_correct = prompts[j]["answer"]
+                is_correct = get_is_correct(answer_given, answer_correct)
+                count_correct += int(is_correct)
+                count_total += 1
+                record.append({
+                    "prompt": prompt,
+                    "generated_text": generated_text,
+                    "answer_given": answer_given,
+                    "answer_correct": answer_correct,
+                    "is_correct": is_correct
+                })
+
+            accuracy = count_correct / count_total
+            
+            # Save individual run results
+            with open(f"results_{model_path}.json", "w") as f:
+                json.dump(record, f)
+                
+            # Add summary to aggregated results
+            all_results.append({
+                "model": model_path,
+                "with_boxed_instructions": with_boxed_instructions,
+                "accuracy": accuracy,
+                "correct_count": count_correct,
+                "total_count": count_total,
+                "temperature": sampling_params.temperature,
+                "top_p": sampling_params.top_p,
+                "top_k": sampling_params.top_k,
             })
-            #print("Answer given: ", answer_given)
-            #print("Answer correct: ", answer_correct)
-            #print("Is correct: ", is_correct)
-            #print("")
 
-        with open(f"results_{model_path}.json", "w") as f:
-            json.dump(record, f)
-        print("\n\n")
-        print(f"Model: {model_path}")
-        print(f"Accuracy: {count_correct / count_total}")
-        print("\n\n")
+            print(f"\n\nModel: {model_path}")
+            print(f"Accuracy: {accuracy}")
+            print("\n")
 
-        # clear up memory
-        del llm
-        del outputs
-        del record
+            # clear up memory
+            del llm
+            del outputs
+            del record
 
+    # Save aggregated results
+    with open("aggregated_results.json", "w") as f:
+        json.dump(all_results, f, indent=2)
 
 
 if __name__ == "__main__":
