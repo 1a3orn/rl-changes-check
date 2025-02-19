@@ -2,9 +2,9 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
 to_load = [
-    ("agentica-org/DeepScale-R-1.5B-Preview", "agentica"),
-    ("deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B", "deepseek"),
     ("Qwen/Qwen2.5-Math-1.5B", "qwen"),
+    ("deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B", "deepseek"),
+    ("agentica-org/DeepScale-R-1.5B-Preview", "agentica"),
 ]
 
 
