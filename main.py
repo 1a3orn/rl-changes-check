@@ -27,12 +27,14 @@ def load_prompts(path):
         converted.append({"prompt": full_prompt, "answer": answer_str})
 
     return converted
+
+
+
 def main():
 
-
     print("Loading prompts...")
-    prompts = load_prompts("./data/trash_math_train_questions.json")    prompts = load_prompts("./data/trash_math_train_questions.json")
-    prompt_text = [item["prompt"] for item in prompts]
+    prompts = load_prompts("./data/trash_math_train_questions.json")
+    prompt_text = [item["prompt"] for item in prompts][:10]
 
     print("Loading model...")
     sampling_params = SamplingParams(temperature=0.8, top_p=0.95)
