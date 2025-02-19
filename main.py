@@ -33,7 +33,7 @@ def load_prompts(path):
 def boxed_extractor(text):
     return text.split("boxed{")[1].split("}")[0]
 
-def is_correct(answer, correct_answer):
+def get_is_correct(answer, correct_answer):
     answer = answer.lower()
     correct_answer = correct_answer.lower()
     try:
@@ -72,7 +72,7 @@ def main():
                 generated_text = output.outputs[0].text
                 answer_given = extractor(generated_text)
                 answer_correct = prompts[i * CHUNK_SIZE + j]["answer"]
-                is_correct = is_correct(answer_given, answer_correct)
+                is_correct = get_is_correct(answer_given, answer_correct)
                 count_correct += int(is_correct)
                 count_total += 1
                 print(f"\n\nPrompt: {prompt!r}\nGenerated text: {generated_text!r}\nAnswer: {answer!r}\nCorrect: {answer_correct!r}\nIs correct: {is_correct}")
