@@ -60,14 +60,21 @@ models = [
 def main():
     print("Loading prompts...")
     prompts = load_prompts("./datasets/trash_math_train_questions.json", with_boxed_instructions=True)
-    prompt_text = [item["prompt"] for item in prompts][:50]
+    prompt_text = [item["prompt"] for item in prompts][:100]
 
     all_results = []  # Store results from all runs
 
-    for with_boxed_instructions in [True, False]:
+    for with_boxed_instructions, temperature in [
+        (True, 0.6),
+        (False, 0.6),
+        (True, 0.4),
+        (False, 0.4),
+        (True, 0.8),
+        (False, 0.8),
+    ]:
         for model_path, extractor in models:
             print(f"Loading model {model_path}...")
-            sampling_params = SamplingParams(temperature=0.6, top_p=0.95, top_k=-1, max_tokens=6000)
+            sampling_params = SamplingParams(temperature=temperature, top_p=0.95, top_k=-1, max_tokens=6000)
             llm = load_llm(model_path)
 
             count_correct = 0
@@ -96,7 +103,7 @@ def main():
             
             # Save individual run results
             with open(f"results_{model_path}.json", "w") as f:
-                json.dump(record, f)
+                json.dump(record, f, indent=2)
                 
             # Add summary to aggregated results
             all_results.append({
@@ -111,6 +118,8 @@ def main():
             })
 
             print(f"\n\nModel: {model_path}")
+            print(f"With boxed instructions: {with_boxed_instructions}")
+            print(f"Temperature: {sampling_params.temperature}")
             print(f"Accuracy: {accuracy}")
             print("\n")
 
