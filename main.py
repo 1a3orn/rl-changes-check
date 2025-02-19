@@ -19,9 +19,10 @@ def load_prompts(path):
 
         # Append some instructions about <think> and <answer>
         addition = (
-            "First, please think step-by-step about how to get the right answer. "
-            "You may use any technique you want to find the answer or check that it is right."
-            "Afterwards, write the answer and only the answer inside <answer>...</answer> tags."
+            ""
+            #"First, please think step-by-step about how to get the right answer. "
+            #"You may use any technique you want to find the answer or check that it is right."
+            #"Afterwards, write the answer and only the answer inside <answer>...</answer> tags."
         )
         full_prompt = f"{question_str} {addition}"
         converted.append({"prompt": full_prompt, "answer": answer_str})
@@ -37,7 +38,7 @@ def main():
     prompt_text = [item["prompt"] for item in prompts][:10]
 
     print("Loading model...")
-    sampling_params = SamplingParams(temperature=0.8, top_p=0.95)
+    sampling_params = SamplingParams(temperature=0.8, top_p=0.95, max_tokens=3000)
     llm = load_llm("./agentica")
 
     CHUNK_SIZE = 2
