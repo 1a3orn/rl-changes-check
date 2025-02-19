@@ -54,23 +54,30 @@ def main():
     prompt_text = [item["prompt"] for item in prompts][:10]
 
     for model_path, extractor in models:
+
         print(f"Loading model {model_path}...")
-        sampling_params = SamplingParams(temperature=0.6, top_p=0.95, max_tokens=3000)
+        sampling_params = SamplingParams(temperature=0.6, top_p=0.95, max_tokens=5000)
         llm = load_llm(model_path)
+
+        count_correct = 0
+        count_total = 0
 
         CHUNK_SIZE = 2
         for i in range(len(prompt_text) // CHUNK_SIZE):
             print(f"Processing prompts {i} to {i + CHUNK_SIZE - 1} of {len(prompt_text) // CHUNK_SIZE}")
             outputs = llm.generate(prompt_text[i * CHUNK_SIZE : (i + 1) * CHUNK_SIZE], sampling_params)
 
-            for output in outputs:
+            for j, output in enumerate(outputs):
                 prompt = output.prompt
                 generated_text = output.outputs[0].text
                 answer_given = extractor(generated_text)
                 answer_correct = prompts[i * CHUNK_SIZE + j]["answer"]
                 is_correct = is_correct(answer_given, answer_correct)
-                
+                count_correct += int(is_correct)
+                count_total += 1
                 print(f"\n\nPrompt: {prompt!r}\nGenerated text: {generated_text!r}\nAnswer: {answer!r}\nCorrect: {answer_correct!r}\nIs correct: {is_correct}")
+
+        print(f"Accuracy: {count_correct / count_total}")
 
 
 if __name__ == "__main__":
