@@ -24,8 +24,8 @@ def load_prompts(path):
             #"You may use any technique you want to find the answer or check that it is right."
             #"Afterwards, write the answer and only the answer inside <answer>...</answer> tags."
         )
-        full_prompt = f"{question_str}{addition}"
-        converted.append({"prompt": full_prompt.trim(), "answer": answer_str})
+        full_prompt = f"{question_str} {addition}"
+        converted.append({"prompt": full_prompt.strip(), "answer": answer_str})
 
     return converted
 
