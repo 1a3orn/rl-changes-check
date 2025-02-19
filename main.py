@@ -94,6 +94,19 @@ def main():
             json.dump(record, f)
         print(f"Accuracy: {count_correct / count_total}")
 
+        # clear up memory
+        del llm
+        del outputs
+        del record
+        del count_correct
+        del count_total
+        del prompt_text
+        del prompt
+        del generated_text
+        del answer_given
+        del answer_correct
+        del is_correct
+
 
 if __name__ == "__main__":
     main()
