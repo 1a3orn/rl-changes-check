@@ -58,24 +58,23 @@ models = [
 ]
 
 def main_dataset(dataset_path):
-
     all_results = []  # Store results from all runs
 
-    for with_boxed_instructions, temperature in [
-        (True, 0.4),
-        (False, 0.4),
-        (True, 0.8),
-        (False, 0.8),
-    ]:
+    for model_path, extractor in models:
+        print(f"Loading model {model_path}...")
+        llm = load_llm(model_path)
 
-        prompts = load_prompts(dataset_path, with_boxed_instructions=with_boxed_instructions)
-        prompt_text = [item["prompt"] for item in prompts][:10]
+        for with_boxed_instructions, temperature in [
+            (True, 0.4),
+            (False, 0.4),
+            (True, 0.8),
+            (False, 0.8),
+        ]:
+            prompts = load_prompts(dataset_path, with_boxed_instructions=with_boxed_instructions)
+            prompt_text = [item["prompt"] for item in prompts][:10]
 
-        for model_path, extractor in models:
-            print(f"Loading model {model_path}...")
             sampling_params = SamplingParams(temperature=temperature, top_p=0.95, top_k=-1, max_tokens=6000)
-            llm = load_llm(model_path)
-
+            
             count_correct = 0
             count_total = 0
 
@@ -123,9 +122,11 @@ def main_dataset(dataset_path):
             print("\n")
 
             # clear up memory
-            del llm
             del outputs
             del record
+
+        # Move model cleanup to after all configurations are done
+        del llm
 
     # Save aggregated results both as JSON and as a formatted table
     with open("aggregated_results.json", "w") as f:
