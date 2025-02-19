@@ -56,7 +56,7 @@ def main():
 
     print("Loading prompts...")
     prompts = load_prompts("./datasets/trash_math_train_questions.json")
-    prompt_text = [item["prompt"] for item in prompts][:10]
+    prompt_text = [item["prompt"] for item in prompts][:20]
 
     for model_path, extractor in models:
 
@@ -67,26 +67,31 @@ def main():
         count_correct = 0
         count_total = 0
 
-        CHUNK_SIZE = 2
-        for i in range(len(prompt_text) // CHUNK_SIZE):
-            print(f"Processing prompts {i} to {i + CHUNK_SIZE - 1} of {len(prompt_text) // CHUNK_SIZE}")
-            outputs = llm.generate(prompt_text[i * CHUNK_SIZE : (i + 1) * CHUNK_SIZE], sampling_params)
+        outputs = llm.generate(prompt_text, sampling_params)
 
-            for j, output in enumerate(outputs):
-                prompt = output.prompt
-                generated_text = output.outputs[0].text
-                answer_given = extractor(generated_text)
-                answer_correct = prompts[i * CHUNK_SIZE + j]["answer"]
-                is_correct = get_is_correct(answer_given, answer_correct)
-                count_correct += int(is_correct)
-                count_total += 1
-                print("Prompt: ", prompt)
-                print("Generated text: ", generated_text)
-                print("Answer given: ", answer_given)
-                print("Answer correct: ", answer_correct)
-                print("Is correct: ", is_correct)
-                print("")
+        record = []
+        for j, output in enumerate(outputs):
+            prompt = output.prompt
+            generated_text = output.outputs[0].text
+            answer_given = extractor(generated_text)
+            answer_correct = prompts[i * CHUNK_SIZE + j]["answer"]
+            is_correct = get_is_correct(answer_given, answer_correct)
+            count_correct += int(is_correct)
+            count_total += 1
+            record.append({
+                "prompt": prompt,
+                "generated_text": generated_text,
+                "answer_given": answer_given,
+                "answer_correct": answer_correct,
+                "is_correct": is_correct
+            })
+            print("Answer given: ", answer_given)
+            print("Answer correct: ", answer_correct)
+            print("Is correct: ", is_correct)
+            print("")
 
+        with open(f"results_{model_path}.json", "w") as f:
+            json.dump(record, f)
         print(f"Accuracy: {count_correct / count_total}")
 
 
