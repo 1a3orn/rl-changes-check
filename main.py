@@ -56,11 +56,7 @@ models = [
     ("qwen", boxed_extractor),
 ]
 
-
-def main():
-    print("Loading prompts...")
-    prompts = load_prompts("./datasets/trash_math_train_questions.json", with_boxed_instructions=True)
-    prompt_text = [item["prompt"] for item in prompts][:100]
+def main_dataset(dataset_path):
 
     all_results = []  # Store results from all runs
 
@@ -72,6 +68,10 @@ def main():
         (True, 0.8),
         (False, 0.8),
     ]:
+
+        prompts = load_prompts(dataset_path, with_boxed_instructions=with_boxed_instructions)
+        prompt_text = [item["prompt"] for item in prompts][:100]
+        
         for model_path, extractor in models:
             print(f"Loading model {model_path}...")
             sampling_params = SamplingParams(temperature=temperature, top_p=0.95, top_k=-1, max_tokens=6000)
@@ -131,6 +131,12 @@ def main():
     # Save aggregated results
     with open("aggregated_results.json", "w") as f:
         json.dump(all_results, f, indent=2)
+
+def main():
+    for dataset in ["./datasets/trash_math_train_questions.json"]:
+        print(f"Running dataset {dataset}...")
+        main_dataset(dataset)
+    
 
 
 if __name__ == "__main__":
