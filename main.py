@@ -33,9 +33,17 @@ def load_prompts(path):
 def boxed_extractor(text):
     return text.split("boxed{")[1].split("}")[0]
 
+def is_correct(answer, correct_answer):
+    answer = answer.lower()
+    correct_answer = correct_answer.lower()
+    try:
+        return eval(answer) == eval(correct_answer)
+    except:
+        return answer == correct_answer
+
 models = [
     ("agentica", boxed_extractor),
-    ("deepseek", boxed_extractor),
+    #("deepseek", boxed_extractor),
 ]
 
 
@@ -45,19 +53,24 @@ def main():
     prompts = load_prompts("./datasets/trash_math_train_questions.json")
     prompt_text = [item["prompt"] for item in prompts][:10]
 
-    print("Loading model...")
-    sampling_params = SamplingParams(temperature=0.6, top_p=0.95, max_tokens=3000)
-    llm = load_llm("./agentica")
+    for model_path, extractor in models:
+        print(f"Loading model {model_path}...")
+        sampling_params = SamplingParams(temperature=0.6, top_p=0.95, max_tokens=3000)
+        llm = load_llm(model_path)
 
-    CHUNK_SIZE = 2
-    for i in range(len(prompt_text) // CHUNK_SIZE):
-        print(f"Processing prompts {i} to {i + CHUNK_SIZE - 1} of {len(prompt_text) // CHUNK_SIZE}")
-        outputs = llm.generate(prompt_text[i * CHUNK_SIZE : (i + 1) * CHUNK_SIZE], sampling_params)
+        CHUNK_SIZE = 2
+        for i in range(len(prompt_text) // CHUNK_SIZE):
+            print(f"Processing prompts {i} to {i + CHUNK_SIZE - 1} of {len(prompt_text) // CHUNK_SIZE}")
+            outputs = llm.generate(prompt_text[i * CHUNK_SIZE : (i + 1) * CHUNK_SIZE], sampling_params)
 
-        for output in outputs:
-            prompt = output.prompt
-            generated_text = output.outputs[0].text
-            print(f"\n\nPrompt: {prompt!r}\nGenerated text: {generated_text!r}")
+            for output in outputs:
+                prompt = output.prompt
+                generated_text = output.outputs[0].text
+                answer_given = extractor(generated_text)
+                answer_correct = prompts[i * CHUNK_SIZE + j]["answer"]
+                is_correct = is_correct(answer_given, answer_correct)
+                
+                print(f"\n\nPrompt: {prompt!r}\nGenerated text: {generated_text!r}\nAnswer: {answer!r}\nCorrect: {answer_correct!r}\nIs correct: {is_correct}")
 
 
 if __name__ == "__main__":
