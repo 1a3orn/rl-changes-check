@@ -31,10 +31,14 @@ def load_prompts(path):
 
 # Extracts the answer from the boxed{11054} format
 def boxed_extractor(text):
+    text = text.lower()
     try:
         return text.split("boxed{")[1].split("}")[0]
     except:
-        return None
+        try:
+            return text.split("boxed {")[1].split("}")[0]
+        except:
+            return None
 
 def get_is_correct(answer, correct_answer):
     if answer is None:
@@ -49,6 +53,7 @@ def get_is_correct(answer, correct_answer):
 models = [
     ("agentica", boxed_extractor),
     ("deepseek", boxed_extractor),
+    ("qwen", boxed_extractor),
 ]
 
 
@@ -56,7 +61,7 @@ def main():
 
     print("Loading prompts...")
     prompts = load_prompts("./datasets/trash_math_train_questions.json")
-    prompt_text = [item["prompt"] for item in prompts][:30]
+    prompt_text = [item["prompt"] for item in prompts][:25]
 
     for model_path, extractor in models:
 
@@ -85,13 +90,15 @@ def main():
                 "answer_correct": answer_correct,
                 "is_correct": is_correct
             })
-            print("Answer given: ", answer_given)
-            print("Answer correct: ", answer_correct)
-            print("Is correct: ", is_correct)
-            print("")
+            #print("Answer given: ", answer_given)
+            #print("Answer correct: ", answer_correct)
+            #print("Is correct: ", is_correct)
+            #print("")
 
         with open(f"results_{model_path}.json", "w") as f:
             json.dump(record, f)
+        print("\n\n")
+        print(f"Model: {model_path}")
         print(f"Accuracy: {count_correct / count_total}")
 
         # clear up memory
