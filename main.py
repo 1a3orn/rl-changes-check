@@ -77,7 +77,7 @@ def main_dataset(dataset_path):
 
             # Qwen does best with with_boxed_instructions=True, while
             # DeepSeek / Agentica does best with with_boxed_instructions=False
-            
+
             prompts = load_prompts(dataset_path, with_boxed_instructions=with_boxed_instructions)
             prompt_text = [item["prompt"] for item in prompts][:200]
 
@@ -137,7 +137,7 @@ def main_dataset(dataset_path):
         del llm
 
     # Save aggregated results both as JSON and as a formatted table
-    with open(f"aggregated_results_{dataset_path}.json", "w") as f:
+    with open(f"aggregated_results.json", "w") as f:
         json.dump(all_results, f, indent=2)
     
     # Create a formatted table
@@ -159,7 +159,7 @@ def main_dataset(dataset_path):
         f.write(table)
 
 def main():
-    for dataset in ["./datasets/geography_train_questions.json"]:
+    for dataset in ["./datasets/zebralogic_train_questions.json"]:
         print(f"Running dataset {dataset}...")
         main_dataset(dataset)
 
