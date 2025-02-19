@@ -1,4 +1,5 @@
 import json
+from tabulate import tabulate
 
 from vllm import LLM, SamplingParams
 
@@ -61,8 +62,6 @@ def main_dataset(dataset_path):
     all_results = []  # Store results from all runs
 
     for with_boxed_instructions, temperature in [
-        (True, 0.6),
-        (False, 0.6),
         (True, 0.4),
         (False, 0.4),
         (True, 0.8),
@@ -70,8 +69,8 @@ def main_dataset(dataset_path):
     ]:
 
         prompts = load_prompts(dataset_path, with_boxed_instructions=with_boxed_instructions)
-        prompt_text = [item["prompt"] for item in prompts][:100]
-        
+        prompt_text = [item["prompt"] for item in prompts][:10]
+
         for model_path, extractor in models:
             print(f"Loading model {model_path}...")
             sampling_params = SamplingParams(temperature=temperature, top_p=0.95, top_k=-1, max_tokens=6000)
@@ -128,16 +127,32 @@ def main_dataset(dataset_path):
             del outputs
             del record
 
-    # Save aggregated results
+    # Save aggregated results both as JSON and as a formatted table
     with open("aggregated_results.json", "w") as f:
         json.dump(all_results, f, indent=2)
+    
+    # Create a formatted table
+    headers = ["Model", "Boxed Instr.", "Temp.", "Accuracy", "Correct", "Total"]
+    table_data = [
+        [
+            r["model"],
+            r["with_boxed_instructions"],
+            r["temperature"],
+            f"{r['accuracy']:.3f}",
+            r["correct_count"],
+            r["total_count"]
+        ]
+        for r in all_results
+    ]
+    
+    table = tabulate(table_data, headers=headers, tablefmt="grid")
+    with open("aggregated_results.txt", "w") as f:
+        f.write(table)
 
 def main():
     for dataset in ["./datasets/trash_math_train_questions.json"]:
         print(f"Running dataset {dataset}...")
         main_dataset(dataset)
-    
-
 
 if __name__ == "__main__":
     main()
