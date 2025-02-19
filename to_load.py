@@ -23,11 +23,11 @@ def main():
         tokenizer.save_pretrained(save_path)
         
         # Clear from memory
-            del model
-            del tokenizer
-            torch.cuda.empty_cache()
+        del model
+        del tokenizer
+        torch.cuda.empty_cache()
 
-            print(f"Completed {model_id}\n")
+        print(f"Completed {model_id}\n")
 
 
 if __name__ == "__main__":
