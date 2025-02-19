@@ -65,15 +65,19 @@ def main_dataset(dataset_path):
         llm = load_llm(model_path)
 
         for with_boxed_instructions, temperature in [
-            (True, 0.4),
-            (False, 0.4),
-            (True, 0.8),
-            (False, 0.8),
+            (True, 0.3),
+            (False, 0.3),
+            (True, 0.5),
+            (False, 0.5),
+            (True, 0.7),
+            (False, 0.7),
+            (True, 0.9),
+            (False, 0.9),
         ]:
             prompts = load_prompts(dataset_path, with_boxed_instructions=with_boxed_instructions)
-            prompt_text = [item["prompt"] for item in prompts][:10]
+            prompt_text = [item["prompt"] for item in prompts][:200]
 
-            sampling_params = SamplingParams(temperature=temperature, top_p=0.95, top_k=-1, max_tokens=6000)
+            sampling_params = SamplingParams(temperature=temperature, max_tokens=6000)
             
             count_correct = 0
             count_total = 0
@@ -111,8 +115,6 @@ def main_dataset(dataset_path):
                 "correct_count": count_correct,
                 "total_count": count_total,
                 "temperature": sampling_params.temperature,
-                "top_p": sampling_params.top_p,
-                "top_k": sampling_params.top_k,
             })
 
             print(f"\n\nModel: {model_path}")
