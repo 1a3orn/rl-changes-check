@@ -19,7 +19,7 @@ def load_prompts(path):
 
         # Append some instructions about <think> and <answer>
         addition = (
-            ""
+            "Put the answer in the format of boxed{...} with the answer inside the brackets."
             #"First, please think step-by-step about how to get the right answer. "
             #"You may use any technique you want to find the answer or check that it is right."
             #"Afterwards, write the answer and only the answer inside <answer>...</answer> tags."
@@ -61,7 +61,7 @@ def main():
 
     print("Loading prompts...")
     prompts = load_prompts("./datasets/trash_math_train_questions.json")
-    prompt_text = [item["prompt"] for item in prompts][:25]
+    prompt_text = [item["prompt"] for item in prompts][:50]
 
     for model_path, extractor in models:
 
@@ -100,6 +100,7 @@ def main():
         print("\n\n")
         print(f"Model: {model_path}")
         print(f"Accuracy: {count_correct / count_total}")
+        print("\n\n")
 
         # clear up memory
         del llm
