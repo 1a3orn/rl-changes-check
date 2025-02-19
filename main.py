@@ -31,9 +31,14 @@ def load_prompts(path):
 
 # Extracts the answer from the boxed{11054} format
 def boxed_extractor(text):
-    return text.split("boxed{")[1].split("}")[0]
+    try:
+        return text.split("boxed{")[1].split("}")[0]
+    except:
+        return None
 
 def get_is_correct(answer, correct_answer):
+    if answer is None:
+        return False
     answer = answer.lower()
     correct_answer = correct_answer.lower()
     try:
