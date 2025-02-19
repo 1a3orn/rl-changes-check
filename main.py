@@ -104,7 +104,7 @@ def main_dataset(dataset_path):
             accuracy = count_correct / count_total
             
             # Save individual run results
-            with open(f"results_{model_path}.json", "w") as f:
+            with open(f"results_{model_path}_{with_boxed_instructions}_{temperature}.json", "w") as f:
                 json.dump(record, f, indent=2)
                 
             # Add summary to aggregated results
