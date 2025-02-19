@@ -33,7 +33,7 @@ def load_prompts(path):
 def main():
 
     print("Loading prompts...")
-    prompts = load_prompts("./data/trash_math_train_questions.json")
+    prompts = load_prompts("./datasets/trash_math_train_questions.json")
     prompt_text = [item["prompt"] for item in prompts][:10]
 
     print("Loading model...")
