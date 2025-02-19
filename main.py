@@ -56,7 +56,7 @@ def main():
 
     print("Loading prompts...")
     prompts = load_prompts("./datasets/trash_math_train_questions.json")
-    prompt_text = [item["prompt"] for item in prompts][:20]
+    prompt_text = [item["prompt"] for item in prompts][:25]
 
     for model_path, extractor in models:
 
@@ -74,7 +74,7 @@ def main():
             prompt = output.prompt
             generated_text = output.outputs[0].text
             answer_given = extractor(generated_text)
-            answer_correct = prompts[i * CHUNK_SIZE + j]["answer"]
+            answer_correct = prompts[j]["answer"]
             is_correct = get_is_correct(answer_given, answer_correct)
             count_correct += int(is_correct)
             count_total += 1
