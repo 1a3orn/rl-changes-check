@@ -29,6 +29,14 @@ def load_prompts(path):
 
     return converted
 
+# Extracts the answer from the boxed{11054} format
+def boxed_extractor(text):
+    return text.split("boxed{")[1].split("}")[0]
+
+models = [
+    ("agentica", boxed_extractor),
+    ("deepseek", boxed_extractor),
+]
 
 
 def main():
