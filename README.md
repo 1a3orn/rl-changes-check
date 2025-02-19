@@ -10,6 +10,6 @@ uv pip install vllm
 
 
 # Best
-Agentica: no boxed instructions, temperature 0.8
-DeepSeek: no boxed instructions, temperature 0.8
-Qwen: with boxed instructions, temperature 0.4
+Agentica: no boxed instructions, temperature 0.7, 0.91
+DeepSeek: no boxed instructions, temperature 0.9, 0.765 
+Qwen: with boxed instructions, temperature 0.3, 0.875

@@ -74,6 +74,10 @@ def main_dataset(dataset_path):
             (True, 0.9),
             (False, 0.9),
         ]:
+
+            # Qwen does best with with_boxed_instructions=True, while
+            # DeepSeek / Agentica does best with with_boxed_instructions=False
+            
             prompts = load_prompts(dataset_path, with_boxed_instructions=with_boxed_instructions)
             prompt_text = [item["prompt"] for item in prompts][:200]
 
@@ -110,6 +114,7 @@ def main_dataset(dataset_path):
             # Add summary to aggregated results
             all_results.append({
                 "model": model_path,
+                "dataset": dataset_path,
                 "with_boxed_instructions": with_boxed_instructions,
                 "accuracy": accuracy,
                 "correct_count": count_correct,
@@ -118,6 +123,7 @@ def main_dataset(dataset_path):
             })
 
             print(f"\n\nModel: {model_path}")
+            print(f"Dataset: {dataset_path}")
             print(f"With boxed instructions: {with_boxed_instructions}")
             print(f"Temperature: {sampling_params.temperature}")
             print(f"Accuracy: {accuracy}")
@@ -131,7 +137,7 @@ def main_dataset(dataset_path):
         del llm
 
     # Save aggregated results both as JSON and as a formatted table
-    with open("aggregated_results.json", "w") as f:
+    with open(f"aggregated_results_{dataset_path}.json", "w") as f:
         json.dump(all_results, f, indent=2)
     
     # Create a formatted table
@@ -153,7 +159,7 @@ def main_dataset(dataset_path):
         f.write(table)
 
 def main():
-    for dataset in ["./datasets/trash_math_train_questions.json"]:
+    for dataset in ["./datasets/geography_train_questions.json"]:
         print(f"Running dataset {dataset}...")
         main_dataset(dataset)
 
